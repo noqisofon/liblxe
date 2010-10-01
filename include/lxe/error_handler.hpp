@@ -6,7 +6,7 @@
 #define win32api_error_hpp
 
 #include <stdexcept>
-#include <lxe/win32api.hpp>
+#include <spaghetti/string_util.hpp>
 
 
 /**

@@ -5,7 +5,13 @@
 #ifndef win32api_eventlog_hpp
 #define win32api_eventlog_hpp
 
-#include <lxe/win32api.hpp>
+#include <windows.h>
+#include <spaghetti/string_util.hpp>
+
+#ifndef LXELIB_DEFINE_SECURITY_ID_T
+typedef     SID         security_id_t;
+#   define      LXELIB_DEFINE_SECURITY_ID_T
+#endif  /* ndef LXELIB_DEFINE_SECURITY_ID_T */
 
 
 /**
@@ -53,11 +59,11 @@ handle_t register_event_source( const tstring& unc_server_name,
 /**
  * 指定したイベントログの最後にエントリを書き込みます。
  */
-bool report_event( handle_t         eventlog_handle,
-                   EventLogType     event_type,
-                   uint16_t         event_category,
-                   uint32_t         event_id,
-                   SID* const&      user_sid        = NULL
+bool report_event( handle_t                 eventlog_handle,
+                   EventLogType             event_type,
+                   uint16_t                 event_category,
+                   uint32_t                 event_id,
+                   security_id_t* const&    user_sid        = NULL
                  );
 /**
  *
@@ -66,7 +72,7 @@ bool report_event( handle_t                     eventlog_handle,
                    EventLogType                 event_type,
                    uint16_t                     event_category,
                    uint32_t                     event_id,
-                   SID* const&                  user_sid,
+                   security_id_t* const&        user_sid,
                    const std::vector<tstring>&  messages
                  );
 /**
@@ -76,7 +82,7 @@ bool report_event( handle_t                     eventlog_handle,
                    EventLogType                 event_type,
                    uint16_t                     event_category,
                    uint32_t                     event_id,
-                   SID* const&                  user_sid,
+                   security_id_t* const&        user_sid,
                    const std::vector<tstring>&  messages,
                    const std::vector<ubyte>&    raw_data
                  );

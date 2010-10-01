@@ -22,16 +22,16 @@ handle_t register_event_source( const tstring& unc_server_name,
 }
 
 
-bool report_event( handle_t         eventlog_handle,
-                   EventLogType     event_type,
-                   uint16_t         event_category,
-                   uint32_t         event_id,
-                   SID* const&      user_sid
+bool report_event( handle_t                 eventlog_handle,
+                   EventLogType             event_type,
+                   uint16_t                 event_category,
+                   uint32_t                 event_id,
+                   security_id_t* const&    user_sid
                    )
 {
     bool ret;
 
-    if ( handle_is_invalid( eventlog_handle ) || eventlog_handle == NULL )
+    if ( handle_is_invalid( eventlog_handle ) )
         return false;
 
     ret = ReportEvent( eventlog_handle,
@@ -55,16 +55,18 @@ bool report_event( handle_t                 eventlog_handle,
                    EventLogType             event_type,
                    uint16_t                 event_category,
                    uint32_t                 event_id,
-                   SID* const&              user_sid,
+                   security_id_t* const&    user_sid,
                    const vector<tstring>&   messages
                    )
 {
-    vector<const _TCHAR*>           sv;
-    bool                            ret     = false;
-    vector<tstring>::size_type      i       = 0;
-    vector<tstring>::size_type      stop    = messages.size();
+    typedef     vector<tstring>::size_type      size_type;
 
-    if ( handle_is_invalid( eventlog_handle ) || eventlog_handle == NULL )
+    vector<const _TCHAR*>   sv;
+    
+    bool                    ret     = false;
+    size_type               i, stop    = messages.size();
+
+    if ( handle_is_invalid( eventlog_handle ) )
         return false;
 
     /*
@@ -97,20 +99,23 @@ bool report_event( handle_t                 eventlog_handle,
                    EventLogType             event_type,
                    uint16_t                 event_category,
                    uint32_t                 event_id,
-                   SID* const&              user_sid,
+                   security_id_t* const&    user_sid,
                    const vector<tstring>&   messages,
                    const vector<ubyte>&     raw_data
                    )
 {
-    vector<const _TCHAR*>       sv;
-    bool                        ret     = false;
-    vector<tstring>::size_type  i       = 0;
-    vector<tstring>::size_type  stop    = messages.size();
+    typedef     vector<tstring>::size_type      size_type;
+    
+    vector<const _TCHAR*>   sv;
+    
+    bool                    ret;    
+    size_type               i, stop    = messages.size();
+
 #ifdef LXE_USE_ASSERT
     assert( stop == 0 );
 #endif  /* def LXE_USE_ASSERT */
 
-    if ( handle_is_invalid( eventlog_handle ) || eventlog_handle == NULL )
+    if ( handle_is_invalid( eventlog_handle ) )
         return false;
     /*
      * ReportEvent() ÇÃ lpStrings à¯êîÇÕ LPCTSTR* Ç»ÇÃÇ≈ÅA
@@ -143,7 +148,7 @@ bool report_event( handle_t                 eventlog_handle,
 
 bool deregister_event_source(handle_t eventlog_handle)
 {
-    if ( handle_is_invalid( eventlog_handle ) || eventlog_handle == NULL )
+    if ( handle_is_invalid( eventlog_handle ))
         return false;
 
     return DeregisterEventSource( eventlog_handle ) != 0;

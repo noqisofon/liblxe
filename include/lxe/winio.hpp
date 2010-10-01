@@ -5,8 +5,22 @@
 #ifndef lxe_win32api_winio_hpp
 #define lxe_win32api_winio_hpp
 
+#include <windows.h>
 #include <vector>
-#include <lxe/win32api.hpp>
+#ifndef LIBLXE_HASNOT_HANDLE_HPP
+#   include <lxe/handle.hpp>
+#else
+#   ifndef LXE_HANDLE_T_DEFINED
+typedef     HANDLE                  handle_t;
+#       define      LXE_HANDLE_T_DEFINED
+#   endif  /* ndef LXE_HANDLE_T_DEFINED */
+#endif  /* ndef LIBLXE_HASNOT_HANDLE_HPP */
+#include <spaghetti/string_util.hpp>
+
+#ifndef LXE_DEFINE_SECURITY_ATTR_T
+typedef     SECURITY_ATTRIBUTES     security_attr_t;
+#   define      LXE_DEFINE_SECURITY_ATTR_T
+#endif  /* ndef LXE_DEFINE_SECURITY_ATTR_T */
 
 
 /**
@@ -272,22 +286,37 @@ inline tstring get_fullpath(const _TCHAR* original_path) {
 }
 
 
+/**
+ * 
+ */
 tstring convert_platform_path(const tstring& original_path);
 inline tstring convert_platform_path(const _TCHAR* original_path) {
     return convert_platform_path( tstring( original_path ) );
 }
 
 
+/**
+ * 
+ */
 tstring get_root_path(const tstring& local_path);
 inline tstring get_root_path(const _TCHAR* local_path) {
     return get_root_path( tstring( local_path ) );
 }
 
 
+/**
+ * 
+ */
 tstring expand_path(const tstring& local_path);
 inline tstring expand_path(const _TCHAR* local_path) {
     return expand_path( tstring( local_path ) );
 }
+
+
+/**
+ * @since 2010-10-01T14:36:02+0900
+ */
+tstring path_combine(const tstring& path1, const tstring& path2);
 
 
 #endif  /* lxe_win32api_winio_hpp */

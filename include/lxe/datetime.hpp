@@ -4,8 +4,8 @@
 #ifndef lxe_datetime_hpp
 #define lxe_datetime_hpp
 
-
-#include <lxe/win32api.hpp>
+#include <ctime>
+#include <spaghetti/string_util.hpp>
 
 
 /**

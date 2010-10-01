@@ -5,7 +5,10 @@
 #ifndef lxe_vbstring_hpp
 #define lxe_vbstring_hpp
 
-#include <lxe/win32api.hpp>
+#include <windows.h>
+#include <oleauto.h>
+
+#include <spaghetti/string_util.hpp>
 
 
 /**

@@ -4,7 +4,8 @@
 #ifndef lxe_inet_hpp
 #define lxe_inet_hpp
 
-#include <lxe/win32api.hpp>
+#include <winsock2.h>
+#include <spaghetti/string_util.hpp>
 
 
 bool check_host(const tstring& hostname);

@@ -7,6 +7,22 @@
 #include <lxe/winio.hpp>
 using namespace std;
 
+#define     VOLUME_SEPARATOR                        _T(':')
+#define     WINDOWS_DIRECTORY_SEPARATOR             _T('\\')
+#define     UNIX_DIRECTORY_SEPARATOR                _T('/')
+
+#define     S_WINDOWS_DIRECTORY_SEPARATOR           _T("\\")
+#define     S_UNIX_DIRECTORY_SEPARATOR              _T("/")
+
+#define     S_WILD_CARD                             _T("*")
+
+#define     S_HL_CURRENT_DIRECTORY                  _T(".")
+#define     S_CURRENT_DIRECTORY                     _T(".\\")
+#define     S_HL_PARENT_DIRECTORY                   _T("..")
+#define     S_PARENT_DIRECTORY                      _T("..\\")
+
+#define     S_VOLUME_AND_DIRECTORY_SEPARATOR        _T(":\\")
+
 
 /**
  * ファイル名と省略形式のパスから省略されていないパスに変換して返します。
@@ -70,7 +86,7 @@ tstring get_long_path(const tstring& path)
 
     tstring     short_path;
 
-    size_type   lpos        = path.find_first_of( _T('\\'), 3 );
+    size_type   lpos        = path.find_first_of( WINDOWS_DIRECTORY_SEPARATOR, 3 );
     size_type   fpos        = 3;
 
     WIN32_FIND_DATA     data;
@@ -78,7 +94,7 @@ tstring get_long_path(const tstring& path)
         short_path      = path.substr( fpos, lpos - fpos );
         longpath        = _M_get_long_filename_closure( short_path, longpath, data );
         fpos            = lpos + 1;
-        lpos            = path.find_first_of( _T('\\'), fpos );
+        lpos            = path.find_first_of( WINDOWS_DIRECTORY_SEPARATOR, fpos );
     }
     short_path  = path.substr( fpos );
     longpath    = _M_get_long_filename_closure( short_path, longpath, data );
@@ -129,11 +145,11 @@ handle_t create_file( const tstring&            filepath,
                       )
 {
     handle_t  ret;
-#ifdef LXEXE_USE_SEH
+#ifdef LIBLXE_USE_SEH
     __try {
 #else
     {
-#endif  /* def LXEXE_USE_SEH */
+#endif  /* def LIBLXE_USE_SEH */
         ret = CreateFile( filepath.c_str(),
                           desire_access,
                           share_mode,
@@ -142,17 +158,17 @@ handle_t create_file( const tstring&            filepath,
                           flags_and_attributes,
                           template_file
                           );
-#ifdef LXEXE_USE_SEH
+#ifdef LIBLXE_USE_SEH
     } __except ( seh_filter( GetExceptionInfomation() ) ) {
     }
 #else
     }
-#endif  /* def LXEXE_USE_SEH */
+#endif  /* def LIBLXE_USE_SEH */
 
-#ifdef LXEXE_USE_THROW_DOMAIN_ERROR
+#ifdef LIBLXE_USE_THROW_DOMAIN_ERROR
     if ( handle_is_invalid( ret ) )
         throw get_last_error( _T(__FILE__), __FUNCTION__, __LINE__ );
-#endif  /* def LXEXE_USE_THROW_DOMAIN_ERROR */
+#endif  /* def LIBLXE_USE_THROW_DOMAIN_ERROR */
 
     return ret;
 }
@@ -163,23 +179,23 @@ bool create_directory( const tstring&           pathname,
                        )
 {
     bool    ret;
-#ifdef LXEXE_USE_SEH
+#ifdef LIBLXE_USE_SEH
     __try {
 #else
     {
-#endif  /* def LXEXE_USE_SEH */
+#endif  /* def LIBLXE_USE_SEH */
         ret = CreateDirectory( pathname.c_str(), security_attributes ) != 0;
-#ifdef LXEXE_USE_SEH
+#ifdef LIBLXE_USE_SEH
     } __except ( seh_filter( GetExceptionInfomation() ) ) {
     }
 #else
     }
-#endif  /* def LXEXE_USE_SEH */
+#endif  /* def LIBLXE_USE_SEH */
 
-#ifdef LXEXE_USE_THROW_DOMAIN_ERROR
+#ifdef LIBLXE_USE_THROW_DOMAIN_ERROR
     if ( handle_is_invalid( ret ) )
         throw get_last_error( _T(__FILE__), __FUNCTION__, __LINE__ );
-#endif  /* def LXEXE_USE_THROW_DOMAIN_ERROR */
+#endif  /* def LIBLXE_USE_THROW_DOMAIN_ERROR */
 
     return ret;
 }
@@ -199,7 +215,7 @@ bool create_recursive_directory(const tstring& path)
         return false;
 
     if ( ( location = __STATIC_CAST(int, created_path.find( current_path, 0 )) ) == tstring::npos ) {
-        while ( ( location = __STATIC_CAST(int, base_path.rfind( _T('\\') )) ) != tstring::npos  ) {
+        while ( ( location = __STATIC_CAST(int, base_path.rfind( WINDOWS_DIRECTORY_SEPARATOR )) ) != tstring::npos  ) {
             base_path   = base_path.substr( 0, location );
 
             if ( ( location = __STATIC_CAST(int, created_path.find( base_path )) ) == 0 )
@@ -215,7 +231,7 @@ bool create_recursive_directory(const tstring& path)
     tstring     tmp_path    = created_path.substr( first_pos, last_pos );
 
     std::vector<tstring>    tmps;
-    split_all( tmp_path, tmps, _T("\\") );
+    split_all( tmp_path, tmps, S_WINDOWS_DIRECTORY_SEPARATOR );
 
     tstringstream   dirpath_builder;
     iterator        sentinel        = tmps.end();
@@ -223,7 +239,7 @@ bool create_recursive_directory(const tstring& path)
 
     dirpath_builder << base_path;
     for ( iterator it = tmps.begin(); it != sentinel; ++ it ) {
-        dirpath_builder << _T('\\') << *it;
+        dirpath_builder << WINDOWS_DIRECTORY_SEPARATOR << *it;
 
         tstring     makedir_path    = dirpath_builder.str();
         if ( !is_exists( makedir_path ) ) {
@@ -243,13 +259,13 @@ bool is_exists(const tstring& find_path)
     uint32_t    ret                 = 0;
 
     tstring     parent_path;
-    size_type   last_separator_pos  = find_path.find_last_of( _T('\\') );
+    size_type   last_separator_pos  = find_path.find_last_of( WINDOWS_DIRECTORY_SEPARATOR );
     /*
      * "\" が無かった場合、parent_path に空文字列が入り、存在しないファイルとして
      * 判定されてしまうので parent_path には "." をいれておきます。
      */
     if ( last_separator_pos == tstring::npos )
-        parent_path   = _T(".");
+        parent_path   = S_HL_CURRENT_DIRECTORY;
     else
         parent_path   = find_path.substr( 0, last_separator_pos );
 
@@ -303,7 +319,7 @@ tstring search_path(const tstring& find_path, const tstring& filename, tstring& 
         if ( ret > 0 ) {
             // tstring に文字列を渡す。
             result          = temp_buffer;
-            ret_filepart = file_part;
+            ret_filepart    = file_part;
             // もう必要ないので開放する。
             delete [] temp_buffer;
         } else {
@@ -311,12 +327,12 @@ tstring search_path(const tstring& find_path, const tstring& filename, tstring& 
              * メモリを割り当ててしまったので、delete[] しておく。
              */
             delete [] temp_buffer;
-#if defined(LXEXE_USE_THROW_DOMAIN_ERROR)
+#if defined(LIBLXE_USE_THROW_DOMAIN_ERROR)
             throw get_last_error( _T(__FILE__), __FUNCTION__, __LINE__ );
-#endif  /* defined(LXEXE_USE_THROW_DOMAIN_ERROR) */
+#endif  /* defined(LIBLXE_USE_THROW_DOMAIN_ERROR) */
         }
     }
-#if defined(LXEXE_USE_THROW_DOMAIN_ERROR)
+#if defined(LIBLXE_USE_THROW_DOMAIN_ERROR)
     else {
         /*
          * この時点では、動的にメモリを割り当てていないので delete[] しなくても
@@ -324,7 +340,7 @@ tstring search_path(const tstring& find_path, const tstring& filename, tstring& 
          */
         throw get_last_error( _T(__FILE__), __FUNCTION__, __LINE__ );
     }
-#endif  /* defined(LXEXE_USE_THROW_DOMAIN_ERROR) */
+#endif  /* defined(LIBLXE_USE_THROW_DOMAIN_ERROR) */
     return result;
 }
 tstring search_path(const tstring& find_path, const tstring& filename)
@@ -447,14 +463,14 @@ bool delete_directory_forse(const tstring& original_path)
 
     WIN32_FIND_DATA     data;
 
-    size_type           last_separator_pos  = original_path.find_last_of( _T('\\') );
+    size_type           last_separator_pos  = original_path.find_last_of( WINDOWS_DIRECTORY_SEPARATOR );
     tstring             parent_path           = original_path.substr( 0, last_separator_pos );
     tstring             file_name           = original_path.substr( last_separator_pos + 1,
                                                                     original_path.length() - last_separator_pos
                                                                     );
 
     tstring             current_path        = search_path( parent_path, file_name );
-    tstring             path                = current_path + _T("\\*");
+    tstring             path                = path_combine( current_path, S_WILD_CARD );
 
     HANDLE              finder              = FindFirstFile( path.c_str(), &data );
 
@@ -464,8 +480,8 @@ bool delete_directory_forse(const tstring& original_path)
     do {
         tstring     filename( data.cFileName );
 
-        if ( filename != _T(".") && filename != _T("..") ) {
-            filename = current_path + _T('\\') + filename;
+        if ( filename != S_HL_CURRENT_DIRECTORY && filename != S_HL_PARENT_DIRECTORY ) {
+            filename = path_combine( current_path, filename );
 
             if ( bitset_is_include( data.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY ) ) {
 
@@ -494,14 +510,14 @@ bool find_directory(const tstring& original_path, const tstring& pattern, vector
     HANDLE              finder;
 
     tstring             current_path  = search_path( original_path );
-    tstring             find_pattern  = current_path + _T('\\') + pattern;
+    tstring             find_pattern  = path_combine( current_path, pattern );
 
     finder      =   FindFirstFile( find_pattern.c_str(), &data );
     if ( handle_is_invalid( finder ) )
         return false;
 
     do {
-        discoverys.push_back( current_path + _T('\\') + data.cFileName );
+        discoverys.push_back( path_combine( current_path, data.cFileName ) );
     } while ( FindNextFile( finder, &data ) );
     FindClose( finder );
 
@@ -540,7 +556,10 @@ tstring get_fullpath(const tstring& original_path)
 
 
 tstring convert_platform_path(const tstring& original_path) {
-    return replace_all( original_path, _T("/"), _T("\\") );
+    return replace_all( original_path,
+                        S_UNIX_DIRECTORY_SEPARATOR,
+                        S_WINDOWS_DIRECTORY_SEPARATOR
+                        );
 }
 
 
@@ -549,23 +568,29 @@ tstring get_root_path(const tstring& local_path)
     typedef     tstring::size_type      size_type;
 
     tstring     path        = convert_platform_path( local_path );
-    size_type   colon_pos   = path.find_first_of( _T(':') );
+    size_type   colon_pos   = path.find_first_of( VOLUME_SEPARATOR );
 
     if ( colon_pos != tstring::npos )
-        return path.substr( 0, colon_pos + 1 ) + _T('\\');
+        return path.substr( 0, colon_pos + 1 ) + WINDOWS_DIRECTORY_SEPARATOR;
     else
-        return _T("\\");
+        return S_WINDOWS_DIRECTORY_SEPARATOR;
 }
 
 
 tstring expand_path(const tstring& local_path)
 {
     tstringstream   fullpath_builder;
-    tstring         path            = replace_all( local_path, _T("\\"), _T("/") );
+    tstring         path            = replace_all( local_path,
+                                                   S_WINDOWS_DIRECTORY_SEPARATOR,
+                                                   S_UNIX_DIRECTORY_SEPARATOR
+                                                   );
 
-    if ( path.find_first_of( _T("/") ) == 0 ) {
+    if ( path.find_first_of( S_UNIX_DIRECTORY_SEPARATOR ) == 0 ) {
         fullpath_builder << get_root_path( path );
-        fullpath_builder << replace_all( path.substr( path.find( _T("\\") ) + 1 ), _T("/"), _T("\\") );
+        fullpath_builder << replace_all( path.substr( path.find( S_WINDOWS_DIRECTORY_SEPARATOR ) + 1 ),
+                                         S_UNIX_DIRECTORY_SEPARATOR,
+                                         S_WINDOWS_DIRECTORY_SEPARATOR
+                                         );
     } else
         fullpath_builder << get_fullpath( local_path );
 
@@ -575,13 +600,13 @@ tstring expand_path(const tstring& local_path)
 
 inline tstring _M_get_long_filename_closure(const tstring& filename, const tstring& dir, WIN32_FIND_DATA& data)
 {
-    tstring     find_path( dir + _T('\\') + filename );
+    tstring     find_path( path_combine( dir, filename ) );
     tstring     longname( dir );
 
     handle_t    finder   = FindFirstFile( find_path.c_str(), &data );
 
     if ( !handle_is_invalid( finder ) )
-        longname = dir + _T('\\') +  data.cFileName;
+        longname = path_combine( dir, data.cFileName );
 
     FindClose( finder );
 
@@ -589,22 +614,25 @@ inline tstring _M_get_long_filename_closure(const tstring& filename, const tstri
 }
 
 
-inline bool _M_delete_directory_closure(const tstring& parent_path, const tstring& directory_name, WIN32_FIND_DATA& data)
+inline bool _M_delete_directory_closure( const tstring&     parent_path,
+                                         const tstring&     directory_name,
+                                         WIN32_FIND_DATA&   data
+                                         )
 {
-    tstring     current_path( search_path( parent_path, directory_name ) );
-    tstring     find_path( current_path + _T("\\*") );
+    tstring     current_path    = search_path( parent_path, directory_name );
+    tstring     find_path       = path_combine( current_path, S_WILD_CARD );
 
     HANDLE      finder          = FindFirstFile( find_path.c_str(), &data );
     if ( handle_is_invalid( finder ) )
         return false;
 
     do {
-        tstring tmp_entryname( data.cFileName );
+        tstring     tmp_entryname( data.cFileName );
 
-        if ( tmp_entryname != _T(".") && tmp_entryname != _T("..") ) {
+        if ( tmp_entryname != S_HL_CURRENT_DIRECTORY && tmp_entryname != S_HL_PARENT_DIRECTORY ) {
 
-            tmp_entryname = current_path + _T('\\') + tmp_entryname;
-            if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY ) {
+            tmp_entryname = path_combine( current_path, tmp_entryname );
+            if ( bitset_is_include( data.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY ) ) {
                 if ( !_M_delete_directory_closure( current_path, tstring( data.cFileName ), data ) )
                     return false;
 
@@ -629,4 +657,56 @@ inline bool _M_delete_directory_closure(const tstring& parent_path, const tstrin
     FindClose( finder );
 
     return true;
+}
+
+
+tstring path_combine(const tstring& path1, const tstring& path2)
+{
+    tstring     temp_basepath   = replace_all( path1,
+                                               S_UNIX_DIRECTORY_SEPARATOR,
+                                               S_WINDOWS_DIRECTORY_SEPARATOR
+                                               );
+    tstring     temp_localpath  = replace_all( path2,
+                                               S_UNIX_DIRECTORY_SEPARATOR,
+                                               S_WINDOWS_DIRECTORY_SEPARATOR
+                                               );
+
+    if ( temp_basepath.compare( S_HL_CURRENT_DIRECTORY ) == 0
+         || temp_basepath.compare( S_CURRENT_DIRECTORY ) == 0
+         ) {
+        /*
+         * ベースパスはカレントディレクトリを表しているので、カレントディレクトリに変えておきます。
+         */
+        temp_basepath   = get_current_directory();
+    } else if ( temp_basepath.find( S_HL_PARENT_DIRECTORY ) == 0
+                || temp_basepath.find( S_PARENT_DIRECTORY ) == 0
+                ) {
+        /*
+         * ベースパスはパレントディレクトリを表しているので、カレントディレクトリの親ディレクトリパスにしておきます。
+         */
+        temp_basepath   = get_fullpath( temp_basepath );
+    } else if ( temp_basepath.find( WINDOWS_DIRECTORY_SEPARATOR ) == 0 ) {
+        /*
+         * ベースパスはルートパスなので、ルートパスをくっつけます。
+         */
+        temp_basepath   = get_fullpath( temp_basepath );
+    } else if ( temp_basepath.find_last_of( S_VOLUME_AND_DIRECTORY_SEPARATOR ) == 0 ) {
+        /* 
+         * ルートパスらしいのでディレクトリセパレータを除いておきます。
+         */
+        temp_basepath   = temp_basepath.substr( 0, temp_basepath.find( WINDOWS_DIRECTORY_SEPARATOR ) );
+    }
+
+    if ( temp_localpath == S_HL_CURRENT_DIRECTORY ) {
+        /* 
+         * ローカルパスが `.' なら、カレントディレクトリを指すことにしているので空文字列を入れておく。
+         */
+        temp_localpath   = tstring();
+    }
+
+    size_t  last_slash  = temp_localpath.find_last_of( WINDOWS_DIRECTORY_SEPARATOR );
+    if ( last_slash != tstring::npos )
+        temp_localpath  = temp_localpath.substr( 0, last_slash );
+
+    return temp_basepath + WINDOWS_DIRECTORY_SEPARATOR + temp_localpath;
 }

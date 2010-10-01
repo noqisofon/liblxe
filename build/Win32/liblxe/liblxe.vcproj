@@ -48,7 +48,7 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				ObjectFile="$(IntDir)\$(ProjectName)\"
-				ProgramDataBaseFileName="$(OutDir)\$(TargetName)vc80.pdb"
+				ProgramDataBaseFileName="$(OutDir)\$(TargetName)-vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -64,6 +64,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName)_d.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -112,7 +113,7 @@
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				ObjectFile="$(IntDir)\$(ProjectName)\"
-				ProgramDataBaseFileName="$(OutDir)\$(TargetName)vc80.pdb"
+				ProgramDataBaseFileName="$(OutDir)\$(TargetName)-vc80.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -196,58 +197,102 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\..\include\lxe\algo.hpp"
+			<Filter
+				Name="lxe"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\datetime.hpp"
+				<File
+					RelativePath="..\..\..\include\lxe\algo.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\datetime.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\error_handler.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\eventlog.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\handle.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\inet.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\ini_file.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\lxe.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\registry.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\stream_weaver.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\vbstring.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lxe\winio.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="config"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\error_handler.hpp"
+				<File
+					RelativePath="..\..\..\include\config\config.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\config\liblxe_prefix.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\config\types.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\config\user_config.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="spaghetti"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\eventlog.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\handle.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\inet.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\ini_file.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\lxe.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\registry.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\stream_weaver.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\vbstring.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\win32api.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\lxe\winio.hpp"
-				>
-			</File>
+				<File
+					RelativePath="..\..\..\include\spaghetti\bitset.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\spaghetti\cast.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\spaghetti\iterator_proxy.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\spaghetti\string_util.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\spaghetti\usedll.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="リソース ファイル"

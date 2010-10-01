@@ -5,7 +5,23 @@
 #ifndef lxe_win32api_registry_hpp
 #define lxe_win32api_registry_hpp
 
-#include <lxe/win32api.hpp>
+#include <windows.h>
+#include <spaghetti/string_util.hpp>
+
+#ifndef LXE_DEFINE_REGISTRY_T
+typedef     HKEY            registry_t;
+#   define          LXE_DEFINE_REGISTRY_T
+#endif  /* ndef LXE_DEFINE_REGISTRY_T */
+
+#ifndef LXE_DEFINE_ACCESS_MASK_T
+typedef     ACCESS_MASK     access_mask_t;
+#   define         LXE_DEFINE_ACCESS_MASK_T
+#endif  /* ndef LXE_DEFINE_ACCESS_MASK_T */
+
+#ifndef LXE_DEFINE_SECURITY_ATTR_T
+typedef     SECURITY_ATTRIBUTES     security_attr_t;
+#   define      LXE_DEFINE_SECURITY_ATTR_T
+#endif  /* ndef LXE_DEFINE_SECURITY_ATTR_T */
 
 /**
  * 
