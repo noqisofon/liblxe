@@ -630,7 +630,6 @@ inline bool _M_delete_directory_closure( const tstring&     parent_path,
         tstring     tmp_entryname( data.cFileName );
 
         if ( tmp_entryname != S_HL_CURRENT_DIRECTORY && tmp_entryname != S_HL_PARENT_DIRECTORY ) {
-
             tmp_entryname = path_combine( current_path, tmp_entryname );
             if ( bitset_is_include( data.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY ) ) {
                 if ( !_M_delete_directory_closure( current_path, tstring( data.cFileName ), data ) )

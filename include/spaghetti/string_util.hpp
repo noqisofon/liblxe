@@ -15,6 +15,12 @@
 #   define           tstring           std::string
 #endif  /* defined(_UNICODE) || defined(UNICODE) */
 
+#if defined(_UNICODE) || defined(UNICODE)
+#   define      tstringstream       std::wstringstream
+#else
+#   define      tstringstream       std::stringstream
+#endif  /* defined(_UNICODE) || defined(UNICODE) */
+
 
 template <class _Char> inline
 size_t length(const _Char* s) {

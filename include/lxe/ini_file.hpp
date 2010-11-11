@@ -27,6 +27,42 @@ const size_t    _TEMPORAY_BUFFER_LENGTH    =   4096;
 
 
 /**
+ * @def INI_VALUE_YES
+ * @since 2010-09-03
+ * ini ファイル用の真偽値？の 1 つで、真を表します。
+ */
+#define     INI_VALUE_YES           _T("yes")
+/**
+ * @def INI_VALUE_SHORT_YES
+ * @since 2010-09-03
+ * ini ファイル用の真偽値？の 1 つで、真を表します。
+ * INI_VALUE_YES の短いバージョンです。
+ */
+#define     INI_VALUE_SHORT_YES     _T("y")
+/**
+ * @def INI_VALUE_NO
+ * @since 2010-09-03
+ * ini ファイル用の真偽値？の 1 つで偽を表します。
+ */
+#define     INI_VALUE_NO            _T("no")
+/**
+ * @def INI_VALUE_SHORT_NO
+ * @since 2010-09-03
+ * ini ファイル用の真偽値？の 1 つで偽を表します。
+ * INI_VALUE_NO の短いバージョンです。
+ */
+#define     INI_VALUE_SHORT_NO      _T("n")
+
+
+/**
+ * @def INI_VALUE_NIL
+ * @since 2010-10-04T08:56:38+0900
+ * ini ファイル用の無効な値を表します。
+ */
+#define     INI_VALUE_NIL           _T("nil")
+
+
+/**
  * *.ini ファイルから、指定されたセクション内の全てのキーと値を取得します。
  * <pre>
  * 内部で呼び出す GetPrivateProfileSection() が必要なバッファを返してくれないので、
@@ -78,14 +114,14 @@ uint32_t get_private_profile_int( const tstring&    section_name,
 tstring get_ini_string( const tstring&    section_name,
                         const tstring&    key,
                         const tstring&    filename,
-                        const tstring&    default_string    = tstring("nil"),
+                        const tstring&    default_string    = tstring(INI_VALUE_NIL),
                         size_t            string_length     = _TEMPORAY_BUFFER_LENGTH
                         );
 inline
 tstring get_ini_string( const _TCHAR* const&    section_name,
                         const _TCHAR* const&    key_name,
                         const _TCHAR* const&    filename,
-                        const _TCHAR* const&    default_value       = "nil",
+                        const _TCHAR* const&    default_value       = INI_VALUE_NIL,
                         size_t                  buffer_length       = _TEMPORAY_BUFFER_LENGTH
                         )
 {
@@ -208,7 +244,6 @@ uint32_t get_ini_section_names( _Container&                               sectio
             p += element.length() + 1;
         } while ( *p );
     }
-
     delete [] return_buffer;
 
     return ret;
@@ -218,10 +253,10 @@ uint32_t get_ini_section_names( _Container&                               sectio
 template <class _Container> inline
 uint32_t
 fetch_ini_section_entries( const typename _Container::mapped_type&    section_name,
-                       _Container&                                result_map,
-                       const typename _Container::mapped_type&    filepath,
-                       typename _Container::size_type             result_buffer_length   = _TEMPORAY_BUFFER_LENGTH
-                       )
+                           _Container&                                result_map,
+                           const typename _Container::mapped_type&    filepath,
+                           typename _Container::size_type             result_buffer_length   = _TEMPORAY_BUFFER_LENGTH
+                           )
 {
     typedef     typename _Container::size_type                      size_type;
     typedef     typename _Container::mapped_type                    _String;
@@ -229,12 +264,13 @@ fetch_ini_section_entries( const typename _Container::mapped_type&    section_na
 
     typedef     typename _Container::allocator_type::value_type     _Pair;
 
-    if ( result_buffer_length == 0 ) {
+    uint32_t    ret;
+    _Char*      result_buffer;
 
+    if ( result_buffer_length == 0 )
         return _TEMPORAY_BUFFER_LENGTH;
-    }
-    _Char*      result_buffer   = new _Char[result_buffer_length];
-    uint32_t    ret          = 0;
+
+    result_buffer   = new _Char[result_buffer_length];
 
     ret = GetPrivateProfileSection( section_name.c_str(),
                                     __REINTERPRET_CAST(LPSTR, result_buffer),
@@ -252,8 +288,8 @@ fetch_ini_section_entries( const typename _Container::mapped_type&    section_na
         _String     split_allee;            //!< 分割される文字列。
         size_type   eq_separator_pos    = 0;
         do {
-            split_allee             = p;
-            eq_separator_pos    = split_allee.find( '=' );
+            split_allee         = p;
+            eq_separator_pos    = split_allee.find( _T('=') );
 
             result_map.insert( _Pair( split_allee.substr( 0, eq_separator_pos ),
                                       split_allee.substr( eq_separator_pos + 1 )

@@ -6,6 +6,8 @@
 #define win32api_eventlog_hpp
 
 #include <windows.h>
+
+#include <config/types.h>
 #include <spaghetti/string_util.hpp>
 
 #ifndef LXELIB_DEFINE_SECURITY_ID_T

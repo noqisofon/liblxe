@@ -5,6 +5,7 @@
 #ifndef win32api_error_hpp
 #define win32api_error_hpp
 
+#include <sstream>
 #include <stdexcept>
 #include <spaghetti/string_util.hpp>
 

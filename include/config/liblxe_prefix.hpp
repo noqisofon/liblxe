@@ -22,13 +22,6 @@
 #include <functional>
 #include <stdexcept>
 
-
-#if defined(_UNICODE) || defined(UNICODE)
-#   define      tstringstream       std::wstringstream
-#else
-#   define      tstringstream       std::stringstream
-#endif  /* defined(_UNICODE) || defined(UNICODE) */
-
 #include <spaghetti/cast.h>
 
 
